@@ -13,3 +13,50 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install pip, venv, and dependencies
+        run: |
+          python -m venv venv
+          .\venv\Scripts\activate
+          python -m pip install --upgrade pip
+          pip install --upgrade pip setuptools wheel
+          pip install .
+        shell: pwsh
+
+      - name: Install pre-commit
+        run: |
+          .\venv\Scripts\activate
+          pip install pre-commit
+        shell: pwsh
+
+      - name: Run pre-commit checks
+        run: |
+          .\venv\Scripts\activate
+          pre-commit run --all-files
+        shell: pwsh
+
+      - name: Run security scan with bandit
+        run: |
+          .\venv\Scripts\activate
+          pip install bandit
+          bandit -r .
+        shell: pwsh
+
+      - name: Log in to GitHub Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Build and push Docker image
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          push: true
+          tags: ghcr.io/${{ github.repository_owner }}/${{ github.repository }}:latest
