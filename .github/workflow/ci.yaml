@@ -1,0 +1,15 @@
+name: First CI action
+
+on:
+  push:
+  workflow_dispatch:
+  workflow_call:
+
+
+jobs:
+  first-job:
+    runs-on: windows-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
