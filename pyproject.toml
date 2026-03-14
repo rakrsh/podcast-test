@@ -5,7 +5,7 @@ version = "0.1.0"
 description = "Podcast project with pre-commit hooks"
 authors = ["Your Name <your@email.com>"]
 packages = [
-	{include = "helllo", from = "."},
+	{include = "hello", from = "."},
 	{include = "docker_django", from = "."}
 ]
 
