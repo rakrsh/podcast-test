@@ -19,32 +19,36 @@ jobs:
         with:
           python-version: '3.11'
 
-      - name: Install pip, venv, and dependencies
+      - name: Install Poetry
         run: |
-          python -m venv venv
-          .\venv\Scripts\activate
           python -m pip install --upgrade pip
-          pip install --upgrade pip setuptools wheel
-          pip install .
+          pip install poetry
+        shell: pwsh
+
+      - name: Install dependencies with Poetry
+        run: |
+          poetry install --with dev,test
         shell: pwsh
 
       - name: Install pre-commit
         run: |
-          .\venv\Scripts\activate
-          pip install pre-commit
+          poetry run pip install pre-commit
         shell: pwsh
 
       - name: Run pre-commit checks
         run: |
-          .\venv\Scripts\activate
-          pre-commit run --all-files
+          poetry run pre-commit run --all-files
         shell: pwsh
 
       - name: Run security scan with bandit
         run: |
-          .\venv\Scripts\activate
-          pip install bandit
-          bandit -r .
+          poetry run pip install bandit
+          poetry run bandit -r .
+        shell: pwsh
+
+      - name: Run unit tests
+        run: |
+          poetry run pytest tests --cov=.
         shell: pwsh
 
       - name: Log in to GitHub Container Registry
